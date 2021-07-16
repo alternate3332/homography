@@ -62,7 +62,7 @@ bool CalcRectPosition::calcPosition(const DPoint& point, DPoint& dstPoint){
     const double shiftX = point.x - srcRect.leftTop.x;
     const double shiftY = point.y - srcRect.leftTop.y;
 
-    const double normalizedX = shiftX / srcW;
+    const double normalizedX = 1.0 - shiftX / srcW;
     const double normalizedY = shiftY / srcH;
 
     KeystoneParameters *paramsP = this->params.get();
@@ -89,14 +89,18 @@ bool CalcRectPosition::allocateParamsMemory(){
 bool CalcRectPosition::calcParameter(){
     double x1, x2, x3, x4, y1, y2, y3, y4;
     const DRect r = this->dstRect;
-    x1 = r.leftTop.x;
-    y1 = r.leftTop.y;
-    x2 = r.leftBottom.x;
-    y2 = r.leftBottom.y;
-    x3 = r.rightTop.x;
-    y3 = r.rightTop.y;
-    x4 = r.rightBottom.x;
-    y4 = r.rightBottom.y;
+ 
+    
+    DPoint points[] = {r.rightTop, r.leftTop, r.rightBottom, r.leftBottom}; //
+ 
+    x1 = points[0].x;
+    y1 = points[0].y;
+    x2 = points[1].x;
+    y2 = points[1].y;
+    x3 = points[2].x;
+    y3 = points[2].y;
+    x4 = points[3].x;
+    y4 = points[3].y;
 
     double a, b, c, d, e, f, g, h;
     KeystoneParameters* paramsP = this->params.get();
