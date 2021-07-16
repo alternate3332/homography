@@ -89,7 +89,7 @@ bool CalcRectPosition::allocateParamsMemory(){
 bool CalcRectPosition::calcParameter(){
     double x1, x2, x3, x4, y1, y2, y3, y4;
     const DRect r = this->dstRect;
- 
+    const double NEAR_ZERO = 0.0001;
     
     DPoint points[] = {r.rightTop, r.leftTop, r.rightBottom, r.leftBottom}; //
  
@@ -102,6 +102,22 @@ bool CalcRectPosition::calcParameter(){
     x4 = points[3].x;
     y4 = points[3].y;
 
+    // x2, x4
+    if(abs(x2 - x4) < NEAR_ZERO){
+        x4 -= NEAR_ZERO;
+    }
+    // y4, y3
+    if(abs(y3 - y4) < NEAR_ZERO){
+        y4 -= NEAR_ZERO;
+    }
+    // x4, x3
+    if(abs(x3 - x4) < NEAR_ZERO){
+        x4 -= NEAR_ZERO;
+    }
+    // y4, y2
+    if(abs(y2 - y4) < NEAR_ZERO){
+        y4 -= NEAR_ZERO;
+    }
     double a, b, c, d, e, f, g, h;
     KeystoneParameters* paramsP = this->params.get();
     h = ((x1 - x2 - x3 + x4 )*( y4 - y2 ) - ( y1 - y2 - y3 + y4 )*( x4 - x2 ) ) / ((x4-x2)*(y4-y3)-(x4-x3)*(y4-y2));

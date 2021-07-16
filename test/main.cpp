@@ -51,6 +51,7 @@ void AllocateMemoryCalledOnlyOneTime(){
 void calcTest(){
     suzu::CalcRectPosition p;
     
+    printf("srcRect must be rectangle.\n");
     DRect srcR;
     srcR.leftTop = suzu::DPoint(10, 10);
     srcR.rightTop = suzu::DPoint(90, 10);
@@ -68,22 +69,6 @@ void calcTest(){
     p.setDstRect(dstR);
 
     DPoint res;
-    /*
-    p.calcPosition(DPoint(10, 10), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-    p.calcPosition(DPoint(90, 10), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-    p.calcPosition(DPoint(90, 90), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-    p.calcPosition(DPoint(10, 90), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-
-    p.calcPosition(DPoint(50, 50), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-    p.calcPosition(DPoint(90, 40), res);
-    printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-    */
-
     p.calcPosition(DPoint(10, 10), res);
     printf("near 0, 0 = %.2f, %.2f\n", res.x, res.y);
 
@@ -95,15 +80,11 @@ void calcTest(){
     p.calcPosition(DPoint(10, 90), res);
     printf("near 30, 100 = %.2f, %.2f\n", res.x, res.y);
 
-//    for(int i = 10; i <= 90; i+=10){
-//     p.calcPosition(DPoint(90, i), res);
-//     printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-//    }
-//     printf("\n");
-//    for(int i = 10; i <= 90; i+=10){
-//     p.calcPosition(DPoint(10, i), res);
-//     printf("(x, y)=(%.2f, %.2f)\n", res.x, res.y);
-//    }
+    for(int i = 10; i <= 90; i+=10){
+
+        p.calcPosition(DPoint(10, i), res);
+        printf("(x, y) = (%.2f, %.2f)\n", res.x, res.y);
+    }
 }
 
 int main(int argc, char** argv){
