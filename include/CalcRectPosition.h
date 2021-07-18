@@ -11,12 +11,18 @@ namespace suzu {
     class CalcRectPosition {
         public:
             CalcRectPosition();
-            CalcRectPosition(const DRect& _srcRect, const DRect& _dstRect);
-            void setSrcRect(const DRect& r);
-            void setDstRect(const DRect& r);
+            bool setSrcRect(const DRect& r);
+            bool setDstRect(const DRect& r);
             bool calcPosition(const DPoint& point, DPoint& dstPoint);
 
+            CalcRectPosition(const CalcRectPosition &) = delete;
+            CalcRectPosition &operator=(const CalcRectPosition &) = delete;
+
         protected:
+            virtual bool checkError();
+            virtual bool isRectangle(const DRect& rect);
+            virtual bool isAvailableArea();
+            
             virtual bool allocateParamsMemory();
             virtual bool calcParameter();
             virtual void releaseParams();
@@ -37,6 +43,7 @@ namespace suzu {
             std::unique_ptr<KeystoneParameters> params;
             DRect srcRect;
             DRect dstRect;
+            DPoint target;
 
     };
 };

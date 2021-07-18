@@ -7,25 +7,38 @@ CalcRectPosition::CalcRectPosition(){
     this->dstRect = DRect();
 }
 
-CalcRectPosition::CalcRectPosition(const DRect& _srcRect, const DRect& _dstRect): srcRect(DRect()), dstRect(DRect()) {
-    this->srcRect = _srcRect;
-    this->dstRect = _dstRect;
-}
 
-void CalcRectPosition::setSrcRect(const DRect& r){
+bool CalcRectPosition::setSrcRect(const DRect& r){
+    if(this->isRectangle(r) == false){
+        printf("srcRect must be rectangle. %s\n", __func__);
+        return false;
+    }
+    
     this->srcRect = r;
     this->releaseParams();
+    return true;
 }
 
-void CalcRectPosition::setDstRect(const DRect& r){
+bool CalcRectPosition::setDstRect(const DRect& r){
     this->dstRect = r;
     this->releaseParams();
+    return true;
 }
 
 void CalcRectPosition::releaseParams(){
     this->params = nullptr;
 }
 
+bool CalcRectPosition::checkError(){
+
+    if(this->isRectangle(this->srcRect) != true){
+        printf("srcRect must be rectangle.\n");
+        return false;
+    }
+
+    return true;
+
+}
 
 bool CalcRectPosition::createParamIfNotPrepared(){
 
@@ -48,8 +61,15 @@ bool CalcRectPosition::createParamIfNotPrepared(){
 };
           
 bool CalcRectPosition::calcPosition(const DPoint& point, DPoint& dstPoint){
-    DPoint p;
-    bool res = this->createParamIfNotPrepared();
+
+    this->target = point;
+    bool res = this->checkError();
+    if(res != true){
+        printf("checkError failed. %s\n", __func__);
+        return res;
+    }
+
+    res = this->createParamIfNotPrepared();
     if(res != true){
         printf("createParamIfNotPrepared failed. %s\n", __func__);
         return res;
@@ -87,9 +107,10 @@ bool CalcRectPosition::allocateParamsMemory(){
 };
 
 bool CalcRectPosition::calcParameter(){
+
     double x1, x2, x3, x4, y1, y2, y3, y4;
     const DRect r = this->dstRect;
-    const double NEAR_ZERO = 0.0001;
+    const double NEAR_ZERO = 0.00001;
     
     DPoint points[] = {r.rightTop, r.leftTop, r.rightBottom, r.leftBottom}; //
  
@@ -140,3 +161,34 @@ bool CalcRectPosition::calcParameter(){
 
     return true;
 };
+
+bool CalcRectPosition::isRectangle(const DRect& rect){
+    bool res = true;
+    res &= ( rect.leftTop.y == rect.rightTop.y );
+    res &= ( rect.leftTop.x == rect.leftBottom.x );
+    res &= ( rect.leftBottom.y == rect.rightBottom.y );
+    res &= ( rect.rightTop.x == rect.rightTop.x );
+
+    res &= ( rect.leftTop.x != rect.rightTop.x );
+    res &= ( rect.leftTop.y != rect.leftBottom.y );
+    res &= ( rect.rightTop.y != rect.rightBottom.y);
+    res &= ( rect.leftBottom.x != rect.rightBottom.x );
+
+    return res;
+}
+
+bool CalcRectPosition::isAvailableArea(){
+    bool res = true;
+
+    double maxX = this->srcRect.rightTop.x;
+    double minY = this->srcRect.rightTop.y;
+    double maxY = this->srcRect.leftBottom.y;
+    double minX = this->srcRect.leftBottom.x;
+
+    res &= (this->target.x >= minX);
+    res &= (this->target.x <= maxX);
+    res &= (this->target.y >= minY);
+    res &= (this->target.x <= maxX);
+
+    return true;
+}

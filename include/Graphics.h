@@ -23,6 +23,14 @@ namespace suzu {
                 this->x = p.x;
                 this->y = p.y;
             }
+
+            Point clone() const{
+                Point p;
+                p.x = this->x;
+                p.y = this->y;
+                return p;
+            }
+
     };
 
     template<typename T>
@@ -46,6 +54,17 @@ namespace suzu {
             this->leftBottom = r.leftBottom;
             this->rightTop = r.rightTop;
         }
+
+        Rect clone() const{
+            Rect r;
+            r.leftTop = this->leftTop;
+            r.rightBottom = this->rightBottom;
+            r.rightTop = this->rightTop;
+            r.leftBottom = this->leftBottom;
+            return r;
+        }
+
+
     };
 };
 
