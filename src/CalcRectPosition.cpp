@@ -36,6 +36,11 @@ bool CalcRectPosition::checkError(){
         return false;
     }
 
+    if(this->isAvailableArea() != true){
+        printf("Invalid Area.\n");
+        return false;
+    }
+
     return true;
 
 }
@@ -180,15 +185,16 @@ bool CalcRectPosition::isRectangle(const DRect& rect){
 bool CalcRectPosition::isAvailableArea(){
     bool res = true;
 
+
+    double minX = this->srcRect.leftBottom.x;
     double maxX = this->srcRect.rightTop.x;
     double minY = this->srcRect.rightTop.y;
     double maxY = this->srcRect.leftBottom.y;
-    double minX = this->srcRect.leftBottom.x;
 
     res &= (this->target.x >= minX);
     res &= (this->target.x <= maxX);
     res &= (this->target.y >= minY);
-    res &= (this->target.x <= maxX);
+    res &= (this->target.y <= maxY);
 
-    return true;
+    return res;
 }

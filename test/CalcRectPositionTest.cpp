@@ -232,6 +232,37 @@ void calcPositionWithNoSetupReturnsFalse(){
     printf("%s --- ok\n", __func__);
 }
 
+void calcPositionOutOfSrcRectAreaReturnsFalse(){
+    suzu::CalcRectPosition p;
+    bool isOK = true;
+    
+    DRect srcR;
+    srcR.leftTop = suzu::DPoint(10, 10);
+    srcR.rightTop = suzu::DPoint(90, 10);
+    srcR.leftBottom = suzu::DPoint(10, 90);
+    srcR.rightBottom = suzu::DPoint(90, 90);
+
+    DRect dstR;
+    dstR.leftTop = suzu::DPoint(0, 0);
+    dstR.rightTop = suzu::DPoint(100, 0);
+    dstR.leftBottom = suzu::DPoint(0, 100);
+    dstR.rightBottom = suzu::DPoint(100, 100);
+
+
+    p.setSrcRect(srcR);
+    p.setDstRect(dstR);
+
+    DPoint dstPoint;
+
+    if(true == p.calcPosition(DPoint(0, 10), dstPoint)){
+        printf("%s --- NG\n", __func__);
+        return;
+    }
+
+    printf("%s --- ok\n", __func__);
+    
+}
+
 int main(int argc, char** argv){
 
     printf("\n");
@@ -242,6 +273,7 @@ int main(int argc, char** argv){
     calcOuterRect();
     setNotRectangleReturnsFalse();
     calcPositionWithNoSetupReturnsFalse();
+    calcPositionOutOfSrcRectAreaReturnsFalse();
 
     printf("\n");
 
