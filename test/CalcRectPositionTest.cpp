@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <functional>
+#include <vector>
+#include <tuple>
+#include <iostream>
+#include <string>
 #include "CalcRectPosition.h"
 
 using namespace suzu;
-constexpr double NEAR_ZERO = 0.0001;
+const double NEAR_ZERO = 0.0001;
 
-void AllocateMemoryCalledOnlyOneTime(){
+bool AllocateMemoryCalledOnlyOneTime(){
     class Mock : public suzu::CalcRectPosition {
         public:
             int allocateParamsMemoryCount;
@@ -52,14 +56,10 @@ void AllocateMemoryCalledOnlyOneTime(){
     res &= ( mock.calcParameterCount == 1);
     res &= ( mock.calcCount == 2);
 
-    if( res == false){
-        printf("%s --- NG.\n", __func__);
-    }
-
-    printf("%s --- ok\n", __func__);
+    return res;
 }
 
-void calcPositionTest(){
+bool calcPositionTest(){
     suzu::CalcRectPosition p;
     bool isOK = true;
     
@@ -97,16 +97,10 @@ void calcPositionTest(){
     isOK &= (abs(res.y - 100) < NEAR_ZERO);
 
 
-    if(isOK != true){
-        printf("%s --- NG\n", __func__);
-        return;
-    }
-
-    printf("%s --- ok\n", __func__);
-
+    return isOK;
 }
 
-void calcInnerRect(){
+bool calcInnerRect(){
     suzu::CalcRectPosition p;
     bool isOK = true;
     
@@ -145,16 +139,10 @@ void calcInnerRect(){
     isOK &= (abs(res.x - 0) < NEAR_ZERO);
     isOK &= (abs(res.y - 100) < NEAR_ZERO);
 
-    if(isOK != true){
-        printf("%s --- NG\n", __func__);
-        return;
-    }
-
-    printf("%s --- ok\n", __func__);
-
+    return isOK;
 }
 
-void calcOuterRect(){
+bool calcOuterRect(){
     suzu::CalcRectPosition p;
     bool isOK = true;
     
@@ -190,17 +178,15 @@ void calcOuterRect(){
     p.calcPosition(DPoint(0, 100), res);
     isOK &= (abs(res.x - 10) < NEAR_ZERO);
     isOK &= (abs(res.y - 90) < NEAR_ZERO);
+
+    p.calcPosition(DPoint(50, 50), res);
+    isOK &= (abs(res.x - 50) < NEAR_ZERO);
+    isOK &= (abs(res.y - 50) < NEAR_ZERO);
     
-    if(isOK != true){
-        printf("%s --- NG\n", __func__);
-        return;
-    }
-
-    printf("%s --- ok\n", __func__);
-
+    return isOK;
 }
 
-void setNotRectangleReturnsFalse(){
+bool setNotRectangleReturnsFalse(){
 
     suzu::CalcRectPosition p;
     
@@ -212,27 +198,16 @@ void setNotRectangleReturnsFalse(){
 
     bool res = p.setSrcRect(srcR);
 
-    if(res != false){
-        printf("%s --- NG\n", __func__);
-        return;
-    }
-
-    printf("%s --- ok\n", __func__);
-
-
+    return res == false;
 }
 
-void calcPositionWithNoSetupReturnsFalse(){
+bool calcPositionWithNoSetupReturnsFalse(){
     CalcRectPosition p;
     DPoint dst;
-    if(true == p.calcPosition(DPoint(0, 0), dst)){
-        printf("%s --- NG\n", __func__);
-        return;
-    };
-    printf("%s --- ok\n", __func__);
+    return false == p.calcPosition(DPoint(0, 0), dst);
 }
 
-void calcPositionOutOfSrcRectAreaReturnsFalse(){
+bool calcPositionOutOfSrcRectAreaReturnsFalse(){
     suzu::CalcRectPosition p;
     bool isOK = true;
     
@@ -254,26 +229,42 @@ void calcPositionOutOfSrcRectAreaReturnsFalse(){
 
     DPoint dstPoint;
 
-    if(true == p.calcPosition(DPoint(0, 10), dstPoint)){
-        printf("%s --- NG\n", __func__);
-        return;
-    }
-
-    printf("%s --- ok\n", __func__);
-    
+    return false == p.calcPosition(DPoint(0, 10), dstPoint);
+     
 }
 
 int main(int argc, char** argv){
 
+    typedef std::tuple<std::string, std::function<bool(void)> > mytuple;
+
+    std::vector< mytuple > test;
+
     printf("\n");
 
-    AllocateMemoryCalledOnlyOneTime();
-    calcPositionTest();
-    calcInnerRect();
-    calcOuterRect();
-    setNotRectangleReturnsFalse();
-    calcPositionWithNoSetupReturnsFalse();
-    calcPositionOutOfSrcRectAreaReturnsFalse();
+    test.push_back(mytuple("AllocateMemoryCalledOnlyOneTime",AllocateMemoryCalledOnlyOneTime));
+    test.push_back(mytuple("calcPositionTest",calcPositionTest));
+    test.push_back(mytuple("calcInnerRect",calcInnerRect));
+    test.push_back(mytuple("calcOuterRect",calcOuterRect));
+    test.push_back(mytuple("setNotRectangleReturnsFalse",setNotRectangleReturnsFalse));
+    test.push_back(mytuple("calcPositionWithNoSetupReturnsFalse",calcPositionWithNoSetupReturnsFalse));
+    test.push_back(mytuple("calcPositionOutOfSrcRectAreaReturnsFalse",calcPositionOutOfSrcRectAreaReturnsFalse));
+
+    for(mytuple it : test){
+        std::string funcName = std::get<0>(it);
+        std::function<bool(void)> func = std::get<1>(it);
+        bool res = func();
+        if(res){
+            printf("\x1b[36m");     /* 前景色をシアンに */
+            printf("%s --- ok\n", funcName.c_str());
+        }
+        else {
+            printf("\x1b[31m");     /* 前景色を赤に */
+            printf("%s --- NG\n", funcName.c_str());
+        }
+        
+        printf("\x1b[39m");     /* 前景色をデフォルトに戻す */
+        printf("\x1b[0m");      /* デフォルトに戻す */
+    }
 
     printf("\n");
 
